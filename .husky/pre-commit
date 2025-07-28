@@ -1,0 +1,22 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Check file lengths
+MAX_LINES=600
+
+# Get all staged files
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx)$')
+
+if [ -n "$FILES" ]; then
+  for file in $FILES; do
+    if [ -f "$file" ]; then
+      lines=$(wc -l < "$file")
+      if [ "$lines" -gt "$MAX_LINES" ]; then
+        echo "Error: $file has $lines lines, which exceeds the maximum of $MAX_LINES lines."
+        exit 1
+      fi
+    fi
+  done
+fi
+
+exit 0
